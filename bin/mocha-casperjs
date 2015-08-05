@@ -23,6 +23,7 @@ if [ "$1" = "--help" ] || [ "$1" = "-h" ] ; then
  echo "   --viewport-width    Size of the viewport width"
  echo "   --viewport-height   Size of the viewport height"
  echo "   --client-scripts    Comma-separated array of lists to inject on the client every page load"
+ echo "   --ignore-ssl-errors Tell PhantomJS to ignore ssl errors "
 
  exit 0
 fi
@@ -33,4 +34,13 @@ if [ ! -z "$symLink" ]; then
   mcPath=$(cd $mcPath;cd $(dirname $symLink); pwd)
 fi
 
-$mcPath/../../casperjs/bin/casperjs $mcPath/cli.js --mocha-casperjs-path=$mcPath/.. $*
+
+params=$*
+re='(.*)--ignore-ssl-errors(.*)'
+if [[ $params =~ $re ]]; then
+	echo ${BASH_REMATCH[2]}
+	params=${BASH_REMATCH[1]}${BASH_REMATCH[2]}
+	ignoresslerrorparam="--ignore-ssl-errors=yes"
+fi
+
+$mcPath/../../casperjs/bin/casperjs $ignoresslerrorparam $mcPath/cli.js --mocha-casperjs-path=$mcPath/.. $params
