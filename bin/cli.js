@@ -115,7 +115,7 @@ if ( opts.reporter ) {
     if (opts.reporter.indexOf('.') === 0) {
       opts.reporter = fs.absolute(opts.reporter)
     }
-    reporter = require(opts.reporter)
+    reporter = opts.reporter
   } catch (e) {
     reporter = opts.reporter
   }
