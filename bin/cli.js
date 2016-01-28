@@ -108,16 +108,24 @@ if (typeof process === 'undefined') {
 // fall back to spec by default
 var reporter = 'spec'
 
-if ( opts.reporter ) {
-  // check to see if it is a third party reporter
-  try {
-    // I don't want to use isAbsolute here as it could be a node module or a relative path
-    if (opts.reporter.indexOf('.') === 0) {
-      opts.reporter = fs.absolute(opts.reporter)
+if (opts.reporter) {
+  // CasperJS's patched require searches it's own modules folder which has an `xunit` reporter already.
+  // See https://github.com/nathanboktae/mocha-casperjs/issues/68
+  // For a few well-known reporters let's just directly load them.
+  if (['spec', 'xunit', 'json'].indexOf(opts.reporter) !== -1) {
+    reporter = opts.reporter
+  }
+  else {
+    // check to see if it is a third party reporter
+    try {
+      // I don't want to use isAbsolute here as it could be a node module or a relative path
+      if (opts.reporter.indexOf('.') === 0) {
+        opts.reporter = fs.absolute(opts.reporter)
+      }
+      reporter = require(opts.reporter)
+    } catch (e) {
+      reporter = opts.reporter
     }
-    reporter = opts.reporter
-  } catch (e) {
-    reporter = opts.reporter
   }
 }
 
